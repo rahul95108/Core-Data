@@ -15,6 +15,7 @@
 		18F2E8FB1FBFF6EA00F75146 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18F2E8F91FBFF6EA00F75146 /* LaunchScreen.storyboard */; };
 		18F2E9061FBFF6EA00F75146 /* Core_DataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2E9051FBFF6EA00F75146 /* Core_DataTests.swift */; };
 		18F2E9111FBFF6EA00F75146 /* Core_DataUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2E9101FBFF6EA00F75146 /* Core_DataUITests.swift */; };
+		18F2E91F1FC02FE400F75146 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2E91E1FC02FE400F75146 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		18F2E90C1FBFF6EA00F75146 /* Core DataUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Core DataUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		18F2E9101FBFF6EA00F75146 /* Core_DataUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core_DataUITests.swift; sourceTree = "<group>"; };
 		18F2E9121FBFF6EA00F75146 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		18F2E91E1FC02FE400F75146 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 			children = (
 				18F2E8ED1FBFF6EA00F75146 /* AppDelegate.swift */,
 				18F2E8EF1FBFF6EA00F75146 /* ViewController.swift */,
+				18F2E91E1FC02FE400F75146 /* DetailViewController.swift */,
 				18F2E8F11FBFF6EA00F75146 /* Main.storyboard */,
 				18F2E8F71FBFF6EA00F75146 /* Assets.xcassets */,
 				18F2E8F91FBFF6EA00F75146 /* LaunchScreen.storyboard */,
@@ -265,6 +268,7 @@
 				18F2E8F01FBFF6EA00F75146 /* ViewController.swift in Sources */,
 				18F2E8EE1FBFF6EA00F75146 /* AppDelegate.swift in Sources */,
 				18F2E8F61FBFF6EA00F75146 /* Core_Data.xcdatamodeld in Sources */,
+				18F2E91F1FC02FE400F75146 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

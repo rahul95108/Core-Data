@@ -1,35 +1,50 @@
-//
-//  DetailViewController.swift
-//  Core Data
-//
-//  Created by apple on 18/11/17.
-//  Copyright © 2017 apple. All rights reserved.
-//
 
 import UIKit
+import CoreData
 
 class DetailViewController: UIViewController {
+    
+    @IBOutlet weak var txtTitle: UITextField!
+    
+    var strTitle = NSString()
+    
+    // MARK : - UIView Life Cycle Methods -
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        txtTitle.text = self.strTitle as String
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // MARK : - UIbutton Action Methods -
+    
+    @IBAction func btnUpdate(_ sender: AnyObject){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<Person> = Person.fetchRequest()
+        
+        do {
+            let array_users = try managedContext.fetch(fetchRequest)
+            let user = array_users[0]
+            
+            user.setValue(txtTitle.text, forKey: "name")
+            //save the context
+            do {
+                try managedContext.save()
+                print("saved!")
+            } catch let error as NSError  {
+                print("Could not save \(error), \(error.userInfo)")
+            } catch {
+                
+            }
+        } catch {
+            print("Error with request: \(error)")
+        }
+        self.navigationController?.popViewController(animated: true)
     }
-    */
-
 }
