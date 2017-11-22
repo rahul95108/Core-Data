@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		182456F41FC5974800B1D721 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182456F31FC5974700B1D721 /* CustomCell.swift */; };
 		18F2E8EE1FBFF6EA00F75146 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2E8ED1FBFF6EA00F75146 /* AppDelegate.swift */; };
 		18F2E8F01FBFF6EA00F75146 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2E8EF1FBFF6EA00F75146 /* ViewController.swift */; };
 		18F2E8F31FBFF6EA00F75146 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18F2E8F11FBFF6EA00F75146 /* Main.storyboard */; };
@@ -41,6 +42,7 @@
 /* Begin PBXFileReference section */
 		01D302B9E92BC46743570186 /* Pods_Core_DataTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Core_DataTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1017F8E22BF9FB90D6DA90C3 /* Pods-Core DataUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Core DataUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Core DataUITests/Pods-Core DataUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		182456F31FC5974700B1D721 /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		18F2E8EA1FBFF6EA00F75146 /* Core Data.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Core Data.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		18F2E8ED1FBFF6EA00F75146 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18F2E8EF1FBFF6EA00F75146 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +95,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		182456F21FC5972C00B1D721 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				182456F31FC5974700B1D721 /* CustomCell.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		18F2E8E11FBFF6EA00F75146 = {
 			isa = PBXGroup;
 			children = (
@@ -118,6 +128,7 @@
 		18F2E8EC1FBFF6EA00F75146 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
+				182456F21FC5972C00B1D721 /* Model */,
 				18F2E8ED1FBFF6EA00F75146 /* AppDelegate.swift */,
 				18F2E8EF1FBFF6EA00F75146 /* ViewController.swift */,
 				18F2E91E1FC02FE400F75146 /* DetailViewController.swift */,
@@ -468,6 +479,7 @@
 			files = (
 				18F2E8F01FBFF6EA00F75146 /* ViewController.swift in Sources */,
 				18F2E8EE1FBFF6EA00F75146 /* AppDelegate.swift in Sources */,
+				182456F41FC5974800B1D721 /* CustomCell.swift in Sources */,
 				18F2E8F61FBFF6EA00F75146 /* Core_Data.xcdatamodeld in Sources */,
 				18F2E91F1FC02FE400F75146 /* DetailViewController.swift in Sources */,
 			);

@@ -17,11 +17,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         title = "The List"
         tbView.register(UITableViewCell.self,
                            forCellReuseIdentifier: "Cell")
+        self.tbView.estimatedRowHeight = 44
+        self.tbView.rowHeight = UITableViewAutomaticDimension
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.retriveData()
+        self.showHUD()
+        self.callPostService()
+     //   self.retriveData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,20 +48,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             for result in people {
                 let dict = NSMutableDictionary()
-                dict.setValue(result.value(forKey: "name"), forKey: "product_name")
+                dict.setValue(result.value(forKey: "name"), forKey: "short_description")
                 self.names.add(dict)
             }
             
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-        if self.names.count > 0 {
-            tbView.reloadData()
-        }
-        else{
+     //   if self.names.count > 0 {
+     //       tbView.reloadData()
+     //   }
+    //    else{
             self.showHUD()
             self.callPostService()
-        }
+    //    }
     }
     
     func callPostService(){
@@ -83,7 +87,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 for i in 0..<arr.count{
                     let dictData = arr.object(at: i) as! NSDictionary
                     self.names.add(dictData)
-                    self.addData(name: dictData.value(forKey: "product_name") as! NSString)
+                    self.addData(name: dictData.value(forKey: "short_description") as! NSString)
                 }
                 self.tbView.reloadData()
                 print(self.names)
@@ -135,11 +139,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 return
             }
             let managedContext = appDelegate.persistentContainer.viewContext
-             managedContext.delete(people[indexPath.row] as NSManagedObject)
-            
+            managedContext.delete(people[indexPath.row] as NSManagedObject)
             do {
                 try managedContext.save()
-              //  self.tableView.reloadData()
             } catch {
                 print("error : \(error)")
             }
@@ -154,10 +156,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "Cell")!
+        let cell:CustomCell = tableView.dequeueReusableCell(withIdentifier: "CustomCell") as! CustomCell
         
         let person = self.names[indexPath.row] as! NSDictionary
-        cell.textLabel?.text = person.value(forKey: "product_name") as? String
+        cell.lblTitle.text = person.value(forKey: "short_description") as? String
+     //   cell.lblTitle.numberOfLines = 0
         return cell
     }
     
