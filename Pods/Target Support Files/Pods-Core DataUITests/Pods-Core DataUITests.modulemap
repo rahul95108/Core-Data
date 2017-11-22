@@ -1,0 +1,6 @@
+framework module Pods_Core_DataUITests {
+  umbrella header "Pods-Core DataUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

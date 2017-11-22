@@ -1,5 +1,7 @@
 
 import UIKit
+import MBProgressHUD
+import Alamofire
 import CoreData
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -19,6 +21,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.retriveData()
+    }
+
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    func retriveData(){
+        self.showHUD()
+        self.callPostService()
         guard let appDelegate =
             UIApplication.shared.delegate as? AppDelegate else {
                 return
@@ -28,47 +41,70 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let fetchRequest =
             NSFetchRequest<NSManagedObject>(entityName: "Person")
         do {
+//            self.names.add(try managedContext.fetch(fetchRequest))
+//            print(self.names)
             people = try managedContext.fetch(fetchRequest)
+            for i in 0..<people.count{
+                let person = people[i]
+//                let dict = NSDictionary()
+//                dict.setValue(person.value(forKey: "name") as Any, forKey: "product_name")
+              //  print(person.value(forKey: "name") as Any)
+                self.names.add(person)
+            }
+            print(self.names)
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
         tbView.reloadData()
     }
-
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
     
-    // MARK: - UIButton Action Methods -
-    
-    @IBAction func btnAdd(_ sender: Any) {
-        let alertController = UIAlertController(title: "Add New Name", message: "", preferredStyle: UIAlertControllerStyle.alert)
+    func callPostService(){
+        let dict = NSMutableDictionary()
+        dict.setValue("", forKey: "attribute_id")
+        dict.setValue("", forKey: "brand_id")
+        dict.setValue("", forKey: "category_id")
+        dict.setValue("", forKey: "flavour_id")
+        dict.setValue("", forKey: "goal_id")
+        dict.setValue("", forKey: "measure_id")
+        dict.setValue("20", forKey: "page_limit")
+        dict.setValue("1", forKey: "page_num")
+        dict.setValue("1", forKey: "product_type")
+        dict.setValue("1", forKey: "sort_by")
+        dict.setValue("412", forKey: "user_id")
         
-        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
-            alert -> Void in
-            
-            let firstTextField = alertController.textFields![0] as UITextField
-            self.names.add(firstTextField.text as Any)
-            
-            self.save(name: firstTextField.text!)
-            self.tbView.reloadData()
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: {
-            (action : UIAlertAction!) -> Void in
-        })
-        
-        alertController.addTextField { (textField : UITextField!) -> Void in
-            textField.placeholder = "Enter First Name"
+        Alamofire.request("http://dev.sixpacks.com/api/v1/browsebyFilter1", method: .post, parameters: dict as? [String : AnyObject], encoding: JSONEncoding.default, headers: [:])
+            .responseJSON { response in switch response.result {
+            case .success(let JSON):
+                let dict = JSON as! NSDictionary
+                let arr = dict.value(forKey: "response") as! NSArray
+                
+                for i in 0..<arr.count{
+                    let dictData = arr.object(at: i) as! NSDictionary
+                    self.names.add(dictData)
+                    self.addData(name: dictData.value(forKey: "product_name") as! NSString)
+                }
+                self.tbView.reloadData()
+                print(self.names)
+              //  print("response :-----> ",response)
+            case .failure(let error):
+                print("Request failed with error: \(error)")
+                
+            }
+            self.hidHUD()
         }
-        alertController.addAction(saveAction)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
-    func save(name:String) {
+    func showHUD(){
+        let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
+        loadingNotification.mode = MBProgressHUDMode.indeterminate
+        loadingNotification.label.text = "Loading"
+    }
+    
+    func hidHUD(){
+        MBProgressHUD.hide(for: self.view, animated: true)
+    }
+    
+    func addData(name:NSString){
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -85,6 +121,51 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    // MARK: - UIButton Action Methods -
+    
+//    @IBAction func btnAdd(_ sender: Any) {
+//        let alertController = UIAlertController(title: "Add New Name", message: "", preferredStyle: UIAlertControllerStyle.alert)
+//
+//        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
+//            alert -> Void in
+//
+//            let firstTextField = alertController.textFields![0] as UITextField
+//            self.names.add(firstTextField.text as Any)
+//
+//            self.save(name: firstTextField.text!)
+//            self.tbView.reloadData()
+//        })
+//
+//        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: {
+//            (action : UIAlertAction!) -> Void in
+//        })
+//
+//        alertController.addTextField { (textField : UITextField!) -> Void in
+//            textField.placeholder = "Enter First Name"
+//        }
+//        alertController.addAction(saveAction)
+//        alertController.addAction(cancelAction)
+//
+//        self.present(alertController, animated: true, completion: nil)
+//    }
+//
+//    func save(name:String) {
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            return
+//        }
+//        let managedContext = appDelegate.persistentContainer.viewContext
+//        let entity = NSEntityDescription.entity(forEntityName: "Person", in: managedContext)
+//
+//        let person = NSManagedObject(entity: entity!, insertInto: managedContext)
+//        person.setValue(name, forKey: "name")
+//        do {
+//            try managedContext.save()
+//            people.append(person)
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
+    
     // MARK: - TableView Delegate Methods -
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -93,21 +174,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
-            self.people.remove(at: indexPath.row)
+            self.names.remove(indexPath.row)
             self.tbView.reloadData()
             // handle delete (by removing the data from your array and updating the tableview)
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.people.count
+        return self.names.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "Cell")!
         
-        let person = self.people[indexPath.row]
-        cell.textLabel?.text = person.value(forKey: "name") as? String
+        let person = self.names[indexPath.row] as! NSDictionary
+        cell.textLabel?.text = person.value(forKey: "product_name") as? String
         return cell
     }
     
