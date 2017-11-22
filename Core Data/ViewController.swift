@@ -24,14 +24,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.retriveData()
     }
 
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
     func retriveData(){
-        self.showHUD()
-        self.callPostService()
         guard let appDelegate =
             UIApplication.shared.delegate as? AppDelegate else {
                 return
@@ -40,22 +37,27 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             appDelegate.persistentContainer.viewContext
         let fetchRequest =
             NSFetchRequest<NSManagedObject>(entityName: "Person")
+        
         do {
-//            self.names.add(try managedContext.fetch(fetchRequest))
-//            print(self.names)
             people = try managedContext.fetch(fetchRequest)
-            for i in 0..<people.count{
-                let person = people[i]
-//                let dict = NSDictionary()
-//                dict.setValue(person.value(forKey: "name") as Any, forKey: "product_name")
-              //  print(person.value(forKey: "name") as Any)
-                self.names.add(person)
+            print(people)
+            
+            for result in people {
+                let dict = NSMutableDictionary()
+                dict.setValue(result.value(forKey: "name"), forKey: "product_name")
+                self.names.add(dict)
             }
-            print(self.names)
+            
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-        tbView.reloadData()
+        if self.names.count > 0 {
+            tbView.reloadData()
+        }
+        else{
+            self.showHUD()
+            self.callPostService()
+        }
     }
     
     func callPostService(){
@@ -120,51 +122,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("Could not save. \(error), \(error.userInfo)")
         }
     }
-    
-    // MARK: - UIButton Action Methods -
-    
-//    @IBAction func btnAdd(_ sender: Any) {
-//        let alertController = UIAlertController(title: "Add New Name", message: "", preferredStyle: UIAlertControllerStyle.alert)
-//
-//        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
-//            alert -> Void in
-//
-//            let firstTextField = alertController.textFields![0] as UITextField
-//            self.names.add(firstTextField.text as Any)
-//
-//            self.save(name: firstTextField.text!)
-//            self.tbView.reloadData()
-//        })
-//
-//        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: {
-//            (action : UIAlertAction!) -> Void in
-//        })
-//
-//        alertController.addTextField { (textField : UITextField!) -> Void in
-//            textField.placeholder = "Enter First Name"
-//        }
-//        alertController.addAction(saveAction)
-//        alertController.addAction(cancelAction)
-//
-//        self.present(alertController, animated: true, completion: nil)
-//    }
-//
-//    func save(name:String) {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            return
-//        }
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//        let entity = NSEntityDescription.entity(forEntityName: "Person", in: managedContext)
-//
-//        let person = NSManagedObject(entity: entity!, insertInto: managedContext)
-//        person.setValue(name, forKey: "name")
-//        do {
-//            try managedContext.save()
-//            people.append(person)
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//    }
     
     // MARK: - TableView Delegate Methods -
     
