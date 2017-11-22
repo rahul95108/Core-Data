@@ -131,9 +131,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
-            self.names.remove(indexPath.row)
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            let managedContext = appDelegate.persistentContainer.viewContext
+             managedContext.delete(people[indexPath.row] as NSManagedObject)
+            
+            do {
+                try managedContext.save()
+              //  self.tableView.reloadData()
+            } catch {
+                print("error : \(error)")
+            }
+            
+            self.names.removeObject(at: indexPath.row)
             self.tbView.reloadData()
-            // handle delete (by removing the data from your array and updating the tableview)
         }
     }
     
