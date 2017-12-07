@@ -4,10 +4,14 @@ import MBProgressHUD
 import Alamofire
 import CoreData
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var tbView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var names: NSMutableArray =  []
+    var arrSearch = NSMutableArray()
+    var searchActive:Bool = false
     var people: [NSManagedObject] = []
     
     // MARK: - UIView Life Cycle Methods -
@@ -17,20 +21,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         title = "The List"
         tbView.register(UITableViewCell.self,
                            forCellReuseIdentifier: "Cell")
-        self.tbView.estimatedRowHeight = 44
-        self.tbView.rowHeight = UITableViewAutomaticDimension
+        self.retriveData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.showHUD()
-        self.callPostService()
-     //   self.retriveData()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    // MARK: - GET Data -
     
     func retriveData(){
         guard let appDelegate =
@@ -41,11 +43,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             appDelegate.persistentContainer.viewContext
         let fetchRequest =
             NSFetchRequest<NSManagedObject>(entityName: "Person")
-        
         do {
             people = try managedContext.fetch(fetchRequest)
-            print(people)
-            
             for result in people {
                 let dict = NSMutableDictionary()
                 dict.setValue(result.value(forKey: "name"), forKey: "short_description")
@@ -55,13 +54,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-     //   if self.names.count > 0 {
-     //       tbView.reloadData()
-     //   }
-    //    else{
+        if self.names.count > 0 {
+            tbView.reloadData()
+        }
+        else{
             self.showHUD()
             self.callPostService()
-    //    }
+        }
     }
     
     func callPostService(){
@@ -78,7 +77,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         dict.setValue("1", forKey: "sort_by")
         dict.setValue("412", forKey: "user_id")
         
-        Alamofire.request("http://dev.sixpacks.com/api/v1/browsebyFilter1", method: .post, parameters: dict as? [String : AnyObject], encoding: JSONEncoding.default, headers: [:])
+        Alamofire.request("https://sixpacks.com/api/v1/browsebyFilter1", method: .post, parameters: dict as? [String : AnyObject], encoding: JSONEncoding.default, headers: [:])
             .responseJSON { response in switch response.result {
             case .success(let JSON):
                 let dict = JSON as! NSDictionary
@@ -91,7 +90,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
                 self.tbView.reloadData()
                 print(self.names)
-              //  print("response :-----> ",response)
             case .failure(let error):
                 print("Request failed with error: \(error)")
                 
@@ -99,6 +97,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.hidHUD()
         }
     }
+    
+    // MARK: - Show HUD Methods -
     
     func showHUD(){
         let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
@@ -145,22 +145,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             } catch {
                 print("error : \(error)")
             }
-            
-            self.names.removeObject(at: indexPath.row)
+            if searchActive {
+                self.arrSearch.removeObject(at: indexPath.row)
+                self.names.removeObject(at: indexPath.row)
+            }
+            else{
+                self.names.removeObject(at: indexPath.row)
+            }
             self.tbView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searchActive {
+            return self.arrSearch.count
+        }
         return self.names.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:CustomCell = tableView.dequeueReusableCell(withIdentifier: "CustomCell") as! CustomCell
-        
-        let person = self.names[indexPath.row] as! NSDictionary
-        cell.lblTitle.text = person.value(forKey: "short_description") as? String
-     //   cell.lblTitle.numberOfLines = 0
+        if searchActive {
+            let person = self.arrSearch[indexPath.row] as! NSDictionary
+            cell.lblTitle.text = person.value(forKey: "short_description") as? String
+        }
+        else{
+            let person = self.names[indexPath.row] as! NSDictionary
+            cell.lblTitle.text = person.value(forKey: "short_description") as? String
+        }
         return cell
     }
     
@@ -169,6 +181,39 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let person = self.people[indexPath.row]
         VC.strTitle = (person.value(forKey: "name") as? NSString)!
         self.navigationController?.pushViewController(VC, animated: true)
+    }
+    
+    // MARK: - UISearchBar Delegate Methods -
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchActive = true;
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchActive = false;
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.arrSearch = NSMutableArray()
+        if searchBar.text == "" {
+            arrSearch = names
+        } else {
+            let predicate =
+                NSPredicate(format: "short_description CONTAINS[cd] %@",searchText);
+            
+            let filteredArray = names.filter { predicate.evaluate(with: $0) };
+            self.arrSearch.addObjects(from: filteredArray)
+        }
+        self.tbView.reloadData()
     }
 }
 
